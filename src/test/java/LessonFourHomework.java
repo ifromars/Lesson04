@@ -206,6 +206,47 @@ public class LessonFourHomework {
                 titleAfterDeletion
         );
     }
+    @Test
+    public void articleHasTitleWithoutWait() {
+        // Пропускаем онбординг
+        waitForElementAndClick(
+                AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"org.wikipedia:id/fragment_onboarding_skip_button\")"),
+                "Кнопка пропуска онбординга не найдена",
+                10
+        );
+
+        // Открываем поиск
+        waitForElementAndClick(
+                By.xpath("//*[@text='Поиск по Википедии']"),
+                "Поле поиска не найдено",
+                10
+        );
+
+        // Вводим запрос
+        waitForElementAndSendKeys(
+                By.xpath("//*[@text='Поиск по Википедии']"),
+                "Java",
+                "Поле ввода поиска не найдено",
+                10
+        );
+
+        // Открываем статью по результату
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_results_list']//*[@text='язык программирования']"),
+                "Результат поиска 'Java (язык программирования)' не найден",
+                10
+        );
+        //Закрываем предложение поиграть в игры википедии
+        waitForElementAndClick(AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"org.wikipedia:id/closeButton\")"),
+                "Не найдено на странице",
+                15
+        );
+        //Проверяем заголовок сразу, после закрытия предложения поиграть в игры на Википедии
+        assertElementPresent(
+                AppiumBy.androidUIAutomator("new UiSelector().text(\"Java\").instance(0)"),
+                "У статьи нет элемента title"
+        );
+    }
 
     protected void swipeElementToLeft(By by, String errorMessage){
         WebElement element = waitForElementPresent(by, errorMessage, 15);
@@ -258,5 +299,17 @@ public class LessonFourHomework {
         WebElement element = waitForElementPresent(by, errorMessage, timeoutInSeconds);
         return element.getAttribute(attribute);
     }
+    private void assertElementPresent(By by, String errorMessage) {
+        // Временно устанавливаем неявное ожидание в 0
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(0));
+        try {
+            List<WebElement> elements = driver.findElements(by);
+            Assert.assertFalse(errorMessage, elements.isEmpty());
+        } finally {
+            // Восстанавливаем исходное значение неявного ожидания (10 секунд)
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        }
+    }
+
 
 }
