@@ -35,7 +35,8 @@ public class LessonFourHomework {
                 new URI("http://localhost:4723/").toURL(),
                 options
         );
-
+        // Устанавливаем портретную ориентацию
+        driver.rotate(ScreenOrientation.PORTRAIT);
     }
     // Добавил что бы приложение закрывалось после теста
     @After
